@@ -5,12 +5,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Newtro is ERC1155, Ownable, AccessControl {
+    using Counters for Counters.Counter;
+
     string public name;
     string public symbol;
 
-    mapping(uint256 => bool) private _alreadySetURI;
+    Counters.Counter private _tokenIds;
+
     mapping(uint256 => string) private _uris;
 
     bytes32 public MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -22,6 +26,34 @@ contract Newtro is ERC1155, Ownable, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
+    function airdrop(address[] memory recipients, string memory tokenURI)
+        public
+        onlyRole(MINTER_ROLE)
+    {
+        uint256 recipientsAmount = recipients.length;
+        require(recipientsAmount > 0, "No recipients to airdrop");
+
+        _tokenIds.increment();
+        uint256 tokenId = _tokenIds.current();
+
+        for (uint256 i = 0; i < recipientsAmount; ++i) {
+            address recipient = recipients[i];
+
+            require(
+                balanceOf(recipient, tokenId) == 0,
+                "Cannot be airdropped twice"
+            );
+
+            _mint(recipient, tokenId, 1, "");
+        }
+
+        _uris[tokenId] = tokenURI;
+    }
+
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        return _uris[tokenId];
+    }
+
     function transferOwnership(address newOwner) public override onlyOwner {
         Ownable.transferOwnership(newOwner);
 
@@ -29,28 +61,8 @@ contract Newtro is ERC1155, Ownable, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
     }
 
-    function mintBatch(address[] memory addresses, uint256 tokenId)
-        public
-        onlyRole(MINTER_ROLE)
-    {
-        for (uint256 i = 0; i < addresses.length; ++i) {
-            _mint(addresses[i], tokenId, 1, "");
-        }
-    }
-
-    function setURI(uint256 tokenId, string memory tokenURI)
-        external
-        onlyOwner
-    {
-        // cannot be set twice for same tokenId
-        require(!_alreadySetURI[tokenId], "URI already set");
-
-        _uris[tokenId] = tokenURI;
-        _alreadySetURI[tokenId] = true;
-    }
-
-    function uri(uint256 tokenId) public view override returns (string memory) {
-        return _uris[tokenId];
+    function renounceOwnership() public view override onlyOwner {
+        revert("Transfer ownership instead");
     }
 
     // In case the contract receives ETH
