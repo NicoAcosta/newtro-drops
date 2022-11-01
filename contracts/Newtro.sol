@@ -23,6 +23,7 @@ contract Newtro is ERC1155, Ownable, AccessControl {
         name = "Newtro Drops";
         symbol = "NEWTRO";
 
+        _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
