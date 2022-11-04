@@ -1,5 +1,6 @@
 require('@nomicfoundation/hardhat-toolbox')
 require('@nomiclabs/hardhat-etherscan')
+require('hardhat-abi-exporter')
 require('dotenv').config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -13,5 +14,14 @@ module.exports = {
 	},
 	etherscan: {
 		apiKey: process.env.POLYGONSCAN_API_KEY
+	},
+	abiExporter: {
+		path: './abi',
+		runOnCompile: true,
+		clear: true,
+		flat: true,
+		only: ['NewtroDrops', 'INewtroDrops'],
+		spacing: 2,
+		pretty: true
 	}
 }
