@@ -7,7 +7,16 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Newtro is ERC1155, Ownable, AccessControl {
+///  ___   __    ______   __ __ __   _________  ______    ______       ______   ______    ______   ______   ______      
+/// /__/\ /__/\ /_____/\ /_//_//_/\ /________/\/_____/\  /_____/\     /_____/\ /_____/\  /_____/\ /_____/\ /_____/\     
+/// \::\_\\  \ \\::::_\/_\:\\:\\:\ \\__.::.__\/\:::_ \ \ \:::_ \ \    \:::_ \ \\:::_ \ \ \:::_ \ \\:::_ \ \\::::_\/_    
+///  \:. `-\  \ \\:\/___/\\:\\:\\:\ \  \::\ \   \:(_) ) )_\:\ \ \ \    \:\ \ \ \\:(_) ) )_\:\ \ \ \\:(_) \ \\:\/___/\   
+///   \:. _    \ \\::___\/_\:\\:\\:\ \  \::\ \   \: __ `\ \\:\ \ \ \    \:\ \ \ \\: __ `\ \\:\ \ \ \\: ___\/ \_::._\:\  
+///    \. \`-\  \ \\:\____/\\:\\:\\:\ \  \::\ \   \ \ `\ \ \\:\_\ \ \    \:\/.:| |\ \ `\ \ \\:\_\ \ \\ \ \     /____\:\ 
+///     \__\/ \__\/ \_____\/ \_______\/   \__\/    \_\/ \_\/ \_____\/     \____/_/ \_\/ \_\/ \_____\/ \_\/     \_____\/ 
+///                                                                                                                     
+
+contract NewtroDrops is ERC1155, Ownable, AccessControl {
     using Counters for Counters.Counter;
 
     string public name;
@@ -17,11 +26,15 @@ contract Newtro is ERC1155, Ownable, AccessControl {
 
     mapping(uint256 => string) private _uris;
 
+    string private _contractURI;
+
     bytes32 public MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    constructor() ERC1155("") {
+    constructor(string memory contractURI_) ERC1155("") {
         name = "Newtro Drops";
         symbol = "NEWTRO";
+
+        _contractURI = contractURI_;
 
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -53,6 +66,10 @@ contract Newtro is ERC1155, Ownable, AccessControl {
 
     function uri(uint256 tokenId) public view override returns (string memory) {
         return _uris[tokenId];
+    }
+
+    function contractURI() external view returns (string memory) {
+        return _contractURI;
     }
 
     function transferOwnership(address newOwner) public override onlyOwner {

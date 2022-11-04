@@ -1,0 +1,8 @@
+{
+  "name": "Newtro Drops Test",
+  "description": "Descripción de la colección de Newtro Drops",
+  "image": "https://ipfs.io/ipfs/bafkreiglzp2ezqmkhiaev7duveunmjdq5ypzvnhsac3vd6v72hgsom3ydy",
+  "external_link": "https://www.newtroarts.xyz/",
+  "seller_fee_basis_points": 10000,
+  "fee_recipient": "0x2E5717a136a1EF1ab9fC9051C7427d0d5E2a2967"
+}
